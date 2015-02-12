@@ -235,10 +235,10 @@ module egret {
 
         public setupFont(textField:TextField, style:egret.ITextStyle = null):void {
             style = style || <egret.ITextStyle>{};
-            var italic:boolean = style["italic"] == null ? textField._italic : style["italic"];
-            var bold:boolean = style["bold"] == null ? textField._bold : style["bold"];
-            var size:number = style["size"] == null ? textField._size : style["size"];
-            var fontFamily:string = style["fontFamily"] == null ? textField._fontFamily : style["fontFamily"];
+            var italic:boolean = style["italic"] == null ? textField._properties._italic : style["italic"];
+            var bold:boolean = style["bold"] == null ? textField._properties._bold : style["bold"];
+            var size:number = style["size"] == null ? textField._properties._size : style["size"];
+            var fontFamily:string = style["fontFamily"] == null ? textField._properties._fontFamily : style["fontFamily"];
             var ctx = this.drawCanvasContext;
             var font:string = italic ? "italic " : "normal ";
             font += bold ? "bold " : "normal ";
@@ -263,7 +263,7 @@ module egret {
                 textColor = toColorString(style.textColor);
             }
             else {
-                textColor = textField._textColorString;
+                textColor = textField._properties._textColorString;
             }
 
             var strokeColor:string;
@@ -271,7 +271,7 @@ module egret {
                 strokeColor = toColorString(style.strokeColor);
             }
             else {
-                strokeColor = textField._strokeColorString;
+                strokeColor = textField._properties._strokeColorString;
             }
 
             var outline;
@@ -279,7 +279,7 @@ module egret {
                 outline = style.stroke;
             }
             else {
-                outline = textField._stroke;
+                outline = textField._properties._stroke;
             }
 
             var renderContext = this.drawCanvasContext;

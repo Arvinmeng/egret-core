@@ -49,7 +49,7 @@ module egret {
         }
 
         public _addStageText():void {
-            if (!this._text._inputEnabled) {
+            if (!this._text._properties._inputEnabled) {
                 this._text._touchEnabled = true;
             }
 
@@ -68,7 +68,7 @@ module egret {
             this.stageText._remove();
             this.stageText._removeListeners();
 
-            if (!this._text._inputEnabled) {
+            if (!this._text._properties._inputEnabled) {
                 this._text._touchEnabled = false;
             }
 
@@ -145,39 +145,41 @@ module egret {
         }
 
         public _updateTransform():void {//
+            var self = this;
+            var textWorldTransform = self._text._worldTransform;
             //todo 等待worldTransform的性能优化完成，合并这块代码
-            var oldTransFormA = this._text._worldTransform.a;
-            var oldTransFormB = this._text._worldTransform.b;
-            var oldTransFormC = this._text._worldTransform.c;
-            var oldTransFormD = this._text._worldTransform.d;
-            var oldTransFormTx = this._text._worldTransform.tx;
-            var oldTransFormTy = this._text._worldTransform.ty;
-            this._text._updateBaseTransform();
-            var newTransForm = this._text._worldTransform;
-            if (this._isFirst || oldTransFormA != newTransForm.a ||
+            var oldTransFormA = textWorldTransform.a;
+            var oldTransFormB = textWorldTransform.b;
+            var oldTransFormC = textWorldTransform.c;
+            var oldTransFormD = textWorldTransform.d;
+            var oldTransFormTx = textWorldTransform.tx;
+            var oldTransFormTy = textWorldTransform.ty;
+            self._text._updateBaseTransform();
+            var newTransForm = textWorldTransform;
+            if (self._isFirst || oldTransFormA != newTransForm.a ||
                 oldTransFormB != newTransForm.b ||
                 oldTransFormC != newTransForm.c ||
                 oldTransFormD != newTransForm.d ||
                 oldTransFormTx != newTransForm.tx ||
                 oldTransFormTy != newTransForm.ty) {
-                this._isFirst = false;
-                var point = this._text.localToGlobal();
-                this.stageText.changePosition(point.x, point.y);
+                self._isFirst = false;
+                var point = self._text.localToGlobal();
+                self.stageText.changePosition(point.x, point.y);
 
-                var self = this;
                 egret.callLater(function () {
                     self.stageText._setScale(self._text._worldTransform.a, self._text._worldTransform.d);
-                }, this);
+                }, self);
             }
         }
 
         public _updateProperties():void {
-            var stage:egret.Stage = this._text._stage;
+            var self = this;
+            var stage:egret.Stage = self._text._stage;
             if (stage == null) {
-                this.stageText._setVisible(false);
+                self.stageText._setVisible(false);
             }
             else {
-                var item:DisplayObject = this._text;
+                var item:DisplayObject = self._text;
                 var visible:boolean = item._visible;
                 while (true) {
                     if (!visible) {
@@ -189,27 +191,31 @@ module egret {
                     }
                     visible = item._visible;
                 }
-                this.stageText._setVisible(visible);
+                self.stageText._setVisible(visible);
             }
 
-            this.stageText._setMultiline(this._text._multiline);
-            this.stageText._setMaxChars(this._text._maxChars);
+            var tempProperties:egret.TextFieldProperties = self._text._properties;
 
-            this.stageText._setSize(this._text._size);
-            this.stageText._setTextColor(this._text._textColorString);
-            this.stageText._setTextFontFamily(this._text._fontFamily);
-            this.stageText._setBold(this._text._bold);
-            this.stageText._setItalic(this._text._italic);
-            this.stageText._setTextAlign(this._text._textAlign);
-            this.stageText._setWidth(this._text._getSize(Rectangle.identity).width);
-            this.stageText._setHeight(this._text._getSize(Rectangle.identity).height);
-            this.stageText._setTextType(this._text._displayAsPassword ? "password" : "text");
-            this.stageText._setText(this._text._text);
+            self.stageText._setMultiline(tempProperties._multiline);
+            self.stageText._setMaxChars(tempProperties._maxChars);
+
+            self.stageText._setSize(tempProperties._size);
+            self.stageText._setTextColor(tempProperties._textColorString);
+            self.stageText._setTextFontFamily(tempProperties._fontFamily);
+            self.stageText._setBold(tempProperties._bold);
+            self.stageText._setItalic(tempProperties._italic);
+            self.stageText._setTextAlign(tempProperties._textAlign);
+
+            var rect:egret.Rectangle = self._text._getSize(Rectangle.identity);
+            self.stageText._setWidth(rect.width);
+            self.stageText._setHeight(rect.height);
+            self.stageText._setTextType(tempProperties._displayAsPassword ? "password" : "text");
+            self.stageText._setText(tempProperties._text);
 
             //整体修改
-            this.stageText._resetStageText();
+            self.stageText._resetStageText();
 
-            this._updateTransform();
+            self._updateTransform();
         }
     }
 }
